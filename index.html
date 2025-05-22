@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Conversor html para pdf e então base64</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <style>
+    body {
+      background-color: white;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+    .navbar {
+      background-color: black;
+      color: white;
+      padding: 15px;
+      text-align: center;
+    }
+    .container {
+      padding: 20px;
+    }
+    textarea {
+      width: 100%;
+      height: 200px;
+      margin-bottom: 10px;
+      font-family: monospace;
+    }
+    button {
+      margin-right: 10px;
+      padding: 10px 15px;
+    }
+  </style>
+</head>
+<body>
+  <div class="navbar">
+    <h1>Conversor html para pdf e então base64</h1>
+  </div>
+  <div class="container">
+    <textarea id="htmlInput" placeholder="Cole o HTML aqui"></textarea><br>
+    <button onclick="convertToBase64()">Converter</button>
+    <button onclick="copyBase64()">Copiar Base64</button>
+    <button onclick="clearFields()">Limpar</button><br>
+    <textarea id="base64Output" placeholder="Base64 aparecerá aqui"></textarea>
+  </div>
+
+  <script>
+    function convertToBase64() {
+      const htmlContent = document.getElementById('htmlInput').value;
+      const element = document.createElement('div');
+      element.innerHTML = htmlContent;
+
+      html2pdf().from(element).outputPdf('blob').then(function (pdfBlob) {
+        const reader = new FileReader();
+        reader.onloadend = function () {
+          const base64 = reader.result.split(',')[1];
+          document.getElementById('base64Output').value = base64;
+        };
+        reader.readAsDataURL(pdfBlob);
+      });
+    }
+
+    function copyBase64() {
+      const output = document.getElementById('base64Output');
+      output.select();
+      document.execCommand('copy');
+    }
+
+    function clearFields() {
+      document.getElementById('htmlInput').value = '';
+      document.getElementById('base64Output').value = '';
+    }
+  </script>
+</body>
+</html>
